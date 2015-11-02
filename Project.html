@@ -24,12 +24,38 @@
       width = 600,
       height = 600,
       ctx,
+      sprites,//this is a variable for the player sprite sheet
+      //scrX and scrY are variables that hold the coordinates of the images in the sprite sheet. Mine starts at 4,4
+      scrX = 4, scrY = 4,
       //variables for initially placing the player
       ship_x = (width / 2) - 30, ship_y = height - 95, ship_w = 105, ship_h = 81;
-      
-      
-   
-       //init(); 
+        
+    //this is the gameLoop function. This is the function we will be repeating over and over using requestAnimationFrame
+      function gameLoop(){
+        clearCanvas();
+        drawShip();
+        requestAnimationFrame(gameLoop);
+      }
+        
+    //the clear canvas method
+      function clearCanvas(){
+        ctx.clearRect(0,0,600,600);
+      }
+        
+    //this function is responsible for drawing the player ship and the correct state from the sprite sheet
+      function drawShip(){
+        ctx.drawImage(sprites, scrX, scrY, ship_w, ship_h, ship_x, ship_y, ship_w, ship_h);
+      }
+        
+    //the initialisation function. It basically initialises all the variables and then calls itself. I could have just done it manually but I read in a few books that this is a preferred method so I stuck with it.
+      (function init(){
+        canvas = document.getElementById('canvas');
+        ctx = canvas.getContext('2d');
+        sprites = new Image();
+        sprites.src = 'images/players.png';
+      })();
+    //calling the requestAnimationFrame for an indefinite amount of time  
+    requestAnimationFrame(gameLoop);
     </script>
     
   </body>
