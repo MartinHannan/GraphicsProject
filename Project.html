@@ -1,17 +1,36 @@
 <!DOCTYPE html>
-
-<html lang = "en">
+<html>
   <head>
-    <meta charset="UTF-8">
-    <title>GraphicsProject</title>
- <script src="modernizr-1.6.min.js"></script>
-      <script type="text/javascript">
-          
-      </script>
+    <title>Game Project</title>
+    <style type="text/css">
+    body {
+        margin:0;
+        padding:0;
+    }
+    canvas {
+      display:block;
+      margin:20px auto 0;
+      background: #000000;
+      border:1px dashed #ccc;
+      background:#000;
+    }
+      </style>    
   </head>
-
   <body>
-
+    <canvas id="canvas" width ="600" height ="600"></canvas>
+    <script type="text/javascript">
+    //Declare Variables
+      var canvas,
+      width = 600,
+      height = 600,
+      ctx,
+      //variables for initially placing the player
+      ship_x = (width / 2) - 30, ship_y = height - 95, ship_w = 105, ship_h = 81;
+      
+      
+   
+       //init(); 
+    </script>
+    
   </body>
-
 </html>
