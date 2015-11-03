@@ -49,6 +49,11 @@
     
         //this function is responsible for drawing the player ship and the correct state from the sprite sheet
       function drawPlayer(){
+          /*this is the part that controlls player movement.Its just a series of if and else if statements
+          each evaluates whether the corresponding key boolean is true. It will only be true if the key is
+          pressed. Then it adds 5 in that direction and swaps the sprite for the one for that direction. 
+          Making our ship animated. Our sprite sheet contains 1 row and 3 columns. The 1st sprite starts at x=4 y=4             and then each sprite is spaced 107 along the x axis. So when we press the right key its the 3rd sprite               which means its 4+107+107 = 218.
+          */
           if(rightKey){
             player_x += 5;
             scrX = 218;
@@ -59,11 +64,21 @@
           
            else if(downKey)player_y += 5;
           
+          //if the player is left of the x axis set the players x to 0
+          if(player_x <0) player_x = 0;
+          //if the players x + its width(because the players x will be the top edge of the player so adding width will 
+          //make the x the players right edge) is right of the x axis. Set the players x to width - player width.
+          if((player_x + player_w) >= width) player_x = width - player_w;
+        ``//if the players y is higher than the y axis set their y to 0.
+          if(player_y <=0) player_y =0;
+          //if the players y + its height(because the players y will be the top edge of the player so adding height will 
+          //make the y the players bottom edge) is below of the y axis. Set the players y to height - player height.
+          if((player_y + player_h) >= height) player_y = height - player_h;
           
-        ctx.drawImage(sprites, scrX, scrY, player_w, player_h, player_x, player_y, player_w, player_h);
-          if(rightKey == false || leftKey == false){
-            scrX = 4;
-          }
+          ctx.drawImage(sprites, scrX, scrY, player_w, player_h, player_x, player_y, player_w, player_h);
+            if(rightKey == false || leftKey == false){
+                scrX = 4;
+            }
       }
     
     //this is the gameLoop function. This is the function we will be repeating over and over using requestAnimationFrame
