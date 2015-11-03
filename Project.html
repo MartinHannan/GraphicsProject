@@ -20,20 +20,56 @@
     <canvas id="canvas" width ="600" height ="600"></canvas>
     <script type="text/javascript">
     //Declare Variables
-      var canvas,
-      width = 600,
-      height = 600,
-      ctx,
+      var canvas, width = 600, height = 600, ctx,
       sprites,//this is a variable for the player sprite sheet
-      //scrX and scrY are variables that hold the coordinates of the images in the sprite sheet. Mine starts at 4,4
-      scrX = 4, scrY = 4,
-      //variables for initially placing the player
-      ship_x = (width / 2) - 30, ship_y = height - 95, ship_w = 105, ship_h = 81;
+      
+      scrX = 4, scrY = 4,//scrX and scrY are variables that hold the coordinates of the images in the sprite sheet. Mine starts at 4,4
+      
+      player_x = (width / 2) - 30, player_y = height - 95, player_w = 105, player_h = 81;//variables for initially placing the player
         
+      //boolean variables to track keys being pressed
+      var rightKey = false;
+      var leftKey = false;
+      var upKey = false;
+      var downKey = false;
+    
+    //here are 2 functions that monitor when a key is pressed and release. They switch the values of the corresponding booleans accoringly
+      function keyPress(e){
+        if(e.keyCode == 39) rightKey = true;
+        else if(e.keyCode == 37) leftKey = true;
+        if(e.keyCode == 38) upKey = true;
+        else if(e.keyCode == 40) downKey = true;
+      }
+      function keyLift(e){
+        if(e.keyCode == 39) rightKey = false;
+        else if(e.keyCode == 37) leftKey = false;
+        if(e.keyCode == 38) upKey = false;
+        else if(e.keyCode == 40) downKey = false;
+      }
+    
+        //this function is responsible for drawing the player ship and the correct state from the sprite sheet
+      function drawPlayer(){
+          if(rightKey){
+            player_x += 5;
+            scrX = 218;
+          }else if(leftKey){
+            player_x -= 5;
+            scrX = 111;
+          }else if(upKey){player_y -= 5;}
+          
+           else if(downKey)player_y += 5;
+          
+          
+        ctx.drawImage(sprites, scrX, scrY, player_w, player_h, player_x, player_y, player_w, player_h);
+          if(rightKey == false || leftKey == false){
+            scrX = 4;
+          }
+      }
+    
     //this is the gameLoop function. This is the function we will be repeating over and over using requestAnimationFrame
       function gameLoop(){
         clearCanvas();
-        drawShip();
+        drawPlayer();
         requestAnimationFrame(gameLoop);
       }
         
@@ -42,10 +78,7 @@
         ctx.clearRect(0,0,600,600);
       }
         
-    //this function is responsible for drawing the player ship and the correct state from the sprite sheet
-      function drawShip(){
-        ctx.drawImage(sprites, scrX, scrY, ship_w, ship_h, ship_x, ship_y, ship_w, ship_h);
-      }
+    
         
     //the initialisation function. It basically initialises all the variables and then calls itself. I could have just done it manually but I read in a few books that this is a preferred method so I stuck with it.
       (function init(){
@@ -53,6 +86,8 @@
         ctx = canvas.getContext('2d');
         sprites = new Image();
         sprites.src = 'images/players.png';
+        document.addEventListener("keydown", keyPress, false);
+        document.addEventListener("keyup", keyLift, false);
       })();
     //calling the requestAnimationFrame for an indefinite amount of time  
     requestAnimationFrame(gameLoop);
