@@ -20,31 +20,59 @@
     <canvas id="canvas" width ="600" height ="600"></canvas>
     <script type="text/javascript">
     //Declare Variables
-      var canvas, width = 600, height = 600, ctx,
-      sprites,//this is a variable for the player sprite sheet
+      var canvas, width = 600, height = 600, ctx;
+        
+      var player, alien;//these are the variables for the sprites used in this game.
       
       scrX = 4, scrY = 4,//scrX and scrY are variables that hold the coordinates of the images in the sprite sheet. Mine starts at 4,4
       
       player_x = (width / 2) - 30, player_y = height - 95, player_w = 105, player_h = 81;//variables for initially placing the player
+    
+      var alienMax = 5, aliens =[], alienX=5, alienY=-45, alienW=93, alienH= 84, speed = 3;
         
       //boolean variables to track keys being pressed
-      var rightKey = false;
-      var leftKey = false;
-      var upKey = false;
-      var downKey = false;
+      var right = false;
+      var left = false;
+      var up = false;
+      var down = false;
+      
+        //Here i populate the alien array. spacing them out by 40
+     for (var i = 0; i < alienMax; i++) {
+      aliens.push([alienX, alienY, alienW, alienH, speed]);
+      alienX += alienW + 40;
+    }
     
+        //This is the alien draw function. loops over the array and draws them to the screen
+    function drawAliens() {
+     for (var i = 0; i < aliens.length; i++) {
+            ctx.drawImage(alien, aliens[i][0], aliens[i][1]);
+        }
+    }
+    
+        //the move function for the aliens. and moves them down the screen.
+    function moveAliens(){
+        for(var i =0; i<aliens.length; i++){
+            if(aliens[i][1]<height){
+                aliens[i][1] += aliens[i][4];          
+            }else if(aliens[i][1] > height -1){
+                aliens[i][1] = -45;
+            } 
+        }
+            
+    }
     //here are 2 functions that monitor when a key is pressed and release. They switch the values of the corresponding booleans accoringly
       function keyPress(e){
-        if(e.keyCode == 39) rightKey = true;
-        else if(e.keyCode == 37) leftKey = true;
-        if(e.keyCode == 38) upKey = true;
-        else if(e.keyCode == 40) downKey = true;
+        if(e.keyCode == 39) right = true;
+        else if(e.keyCode == 37) left = true;
+        if(e.keyCode == 38) up = true;
+        else if(e.keyCode == 40) down = true;
+        if(e.keyCode == 88) beamShot = true;
       }
       function keyLift(e){
-        if(e.keyCode == 39) rightKey = false;
-        else if(e.keyCode == 37) leftKey = false;
-        if(e.keyCode == 38) upKey = false;
-        else if(e.keyCode == 40) downKey = false;
+        if(e.keyCode == 39) right = false;
+        else if(e.keyCode == 37) left = false;
+        if(e.keyCode == 38) up = false;
+        else if(e.keyCode == 40) down = false;
       }
     
         //this function is responsible for drawing the player ship and the correct state from the sprite sheet
@@ -52,17 +80,19 @@
           /*this is the part that controlls player movement.Its just a series of if and else if statements
           each evaluates whether the corresponding key boolean is true. It will only be true if the key is
           pressed. Then it adds 5 in that direction and swaps the sprite for the one for that direction. 
-          Making our ship animated. Our sprite sheet contains 1 row and 3 columns. The 1st sprite starts at x=4 y=4             and then each sprite is spaced 107 along the x axis. So when we press the right key its the 3rd sprite               which means its 4+107+107 = 218.
+          Making our ship animated. Our sprite sheet contains 1 row and 3 columns. The 1st sprite starts at x=4 y=4   
+          and then each sprite is spaced 107 along the x axis. So when we press the right key its the 3rd sprite      
+          which means its 4+107+107 = 218.
           */
-          if(rightKey){
+          if(right){
             player_x += 5;
             scrX = 218;
-          }else if(leftKey){
+          }else if(left){
             player_x -= 5;
             scrX = 111;
-          }else if(upKey){player_y -= 5;}
+          }else if(up){player_y -= 5;}
           
-           else if(downKey)player_y += 5;
+           else if(down)player_y += 5;
           
           //if the player is left of the x axis set the players x to 0
           if(player_x <0) player_x = 0;
@@ -75,15 +105,17 @@
           //make the y the players bottom edge) is below of the y axis. Set the players y to height - player height.
           if((player_y + player_h) >= height) player_y = height - player_h;
           
-          ctx.drawImage(sprites, scrX, scrY, player_w, player_h, player_x, player_y, player_w, player_h);
-            if(rightKey == false || leftKey == false){
+          ctx.drawImage(player, scrX, scrY, player_w, player_h, player_x, player_y, player_w, player_h);
+            if(right == false || left == false){
                 scrX = 4;
             }
       }
-    
+      
     //this is the gameLoop function. This is the function we will be repeating over and over using requestAnimationFrame
       function gameLoop(){
-        clearCanvas();
+        clearCanvas();  
+        moveAliens();
+        drawAliens();
         drawPlayer();
         requestAnimationFrame(gameLoop);
       }
@@ -99,8 +131,10 @@
       (function init(){
         canvas = document.getElementById('canvas');
         ctx = canvas.getContext('2d');
-        sprites = new Image();
-        sprites.src = 'images/players.png';
+        player = new Image();
+        player.src = 'images/players.png';
+        alien = new Image();
+        alien.src = 'images/alien.png';
         document.addEventListener("keydown", keyPress, false);
         document.addEventListener("keyup", keyLift, false);
       })();
