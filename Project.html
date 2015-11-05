@@ -30,7 +30,7 @@
     
       var beamMax = 2; beams = [];
         
-      var alienMax = 5, aliens =[], alienX=-10, alienY=-45, alienW=93, alienH= 84, speed = 3;
+      var alienMax = 5, aliens =[], alienX= -10, alienY=-45, alienW=84, alienH= 92, speed = 3;
         
       //boolean variables to track keys being pressed
       var right = false;
@@ -103,7 +103,7 @@
         else if(e.keyCode == 37) left = true;
         if(e.keyCode == 38) up = true;
         else if(e.keyCode == 40) down = true;
-        if(e.keyCode == 88 && beams.length<=beamMax) beams.push([player_x + 25, player_y - 20, 4, 20]);
+        if(e.keyCode == 88 && beams.length<=beamMax) beams.push([player_x + 42, player_y - 20, 4, 20]);
       }
       function keyLift(e){
         if(e.keyCode == 39) right = false;
@@ -149,15 +149,23 @@
       }
       
       function BeamHit(){
+          var beamGone = false;
           for(var i =0; i<beams.length; i++){
               for(var k =0; k<aliens.length; k++){
                     //if the beams Y is Less or Equal to Aliens(Y + its Height)
                     //AND beams X is greater than or equal to the Aliens X
                     //AND Beams X is Less or Equal to Aliens(X + its Width)
                   if(beams[i][1] <= (aliens[k][1] + aliens[k][3]) && beams[i][0] >= aliens[k][0] && beams[i][0]<= (aliens[k][0] + aliens[k][2])){
-                      beams.splice(i,1);
+                      beamGone = true;
                       aliens.splice(k,1);
+                      //randomly push a new Alien onto the screen to replace the old one
+                      aliens.push([(Math.random() * 325) + 20, -45, alienW, alienH, speed]);
                   }
+              }
+              //if the beam hit remove it from the array.
+              if(beamGone == true){
+                  beams.splice(i,1);
+                  beamGone = false;
               }
           }
       }
@@ -189,7 +197,7 @@
         alien = new Image();
         alien.src = 'images/alien.png';
         beam = new Image();
-        beam.src = 'images/beam1.png';
+        beam.src = 'images/beam.png';
         document.addEventListener("keydown", keyPress, false);
         document.addEventListener("keyup", keyLift, false);
       })();
