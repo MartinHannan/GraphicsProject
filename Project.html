@@ -22,13 +22,15 @@
     //Declare Variables
       var canvas, width = 600, height = 600, ctx;
         
-      var player, alien;//these are the variables for the sprites used in this game.
+      var player, alien, beam;//these are the variables for the sprites used in this game.
       
       scrX = 4, scrY = 4,//scrX and scrY are variables that hold the coordinates of the images in the sprite sheet. Mine starts at 4,4
       
       player_x = (width / 2) - 30, player_y = height - 95, player_w = 105, player_h = 81;//variables for initially placing the player
     
-      var alienMax = 5, aliens =[], alienX=5, alienY=-45, alienW=93, alienH= 84, speed = 3;
+      var beamMax = 2; beams = [];
+        
+      var alienMax = 5, aliens =[], alienX=-10, alienY=-45, alienW=93, alienH= 84, speed = 3;
         
       //boolean variables to track keys being pressed
       var right = false;
@@ -60,13 +62,48 @@
         }
             
     }
+        
+    function drawBeam(){
+        if(beams.length){
+            for(var i = 0; i < beams.length; i++){
+                //ctx.fillStyle = '#f00';
+                //ctx.fillRect(beams[0],beams[1],beams[2],beams[3])
+                ctx.drawImage(beam, beams[i][0], beams[i][1]);          
+            }
+        }
+    }
+        
+    function moveBeam(){
+        for(var i = 0; i < beams.length; i++){
+            //if this array items y is less than height add -10
+            if(beams[i][1] > -11){
+                beams[i][1] -= 10;
+                //if it's higher than than the height(i.e not visible) 
+                //remove it from the array freeing up space for another shot.
+            }else if(beams[i][1] < -10)
+                beams.splice(i,1);
+               
+                
+        }
+    }
+    
+        /*
+        function moveBeam(){
+            for(var i =0; i<beams.length; i++){
+            if(beams[i][1] > -11){
+                beams[i][1] -=10;         
+            }else if(beams[i][1] < -10){
+                beams.splice(i,1);
+            } 
+        }    
+    }*/
     //here are 2 functions that monitor when a key is pressed and release. They switch the values of the corresponding booleans accoringly
       function keyPress(e){
         if(e.keyCode == 39) right = true;
         else if(e.keyCode == 37) left = true;
         if(e.keyCode == 38) up = true;
         else if(e.keyCode == 40) down = true;
-        if(e.keyCode == 88) beamShot = true;
+        if(e.keyCode == 88 && beams.length<=beamMax) beams.push([player_x + 25, player_y - 20,4,20]);
       }
       function keyLift(e){
         if(e.keyCode == 39) right = false;
@@ -113,9 +150,11 @@
       
     //this is the gameLoop function. This is the function we will be repeating over and over using requestAnimationFrame
       function gameLoop(){
-        clearCanvas();  
+        clearCanvas();
+        moveBeam();
         moveAliens();
         drawAliens();
+        drawBeam();
         drawPlayer();
         requestAnimationFrame(gameLoop);
       }
@@ -135,6 +174,8 @@
         player.src = 'images/players.png';
         alien = new Image();
         alien.src = 'images/alien.png';
+        beam = new Image();
+        beam.src = 'images/beam1.png';
         document.addEventListener("keydown", keyPress, false);
         document.addEventListener("keyup", keyLift, false);
       })();
