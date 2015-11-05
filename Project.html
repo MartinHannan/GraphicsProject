@@ -103,7 +103,7 @@
         else if(e.keyCode == 37) left = true;
         if(e.keyCode == 38) up = true;
         else if(e.keyCode == 40) down = true;
-        if(e.keyCode == 88 && beams.length<=beamMax) beams.push([player_x + 25, player_y - 20,4,20]);
+        if(e.keyCode == 88 && beams.length<=beamMax) beams.push([player_x + 25, player_y - 20, 4, 20]);
       }
       function keyLift(e){
         if(e.keyCode == 39) right = false;
@@ -148,9 +148,23 @@
             }
       }
       
+      function BeamHit(){
+          for(var i =0; i<beams.length; i++){
+              for(var k =0; k<aliens.length; k++){
+                    //if the beams Y is Less or Equal to Aliens(Y + its Height)
+                    //AND beams X is greater than or equal to the Aliens X
+                    //AND Beams X is Less or Equal to Aliens(X + its Width)
+                  if(beams[i][1] <= (aliens[k][1] + aliens[k][3]) && beams[i][0] >= aliens[k][0] && beams[i][0]<= (aliens[k][0] + aliens[k][2])){
+                      beams.splice(i,1);
+                      aliens.splice(k,1);
+                  }
+              }
+          }
+      }
     //this is the gameLoop function. This is the function we will be repeating over and over using requestAnimationFrame
       function gameLoop(){
         clearCanvas();
+        BeamHit();
         moveBeam();
         moveAliens();
         drawAliens();
