@@ -39,6 +39,7 @@
       var down = false;
       var killCount = 0;
       var alive = true;
+      var track, womp;
       
         //Here i populate the alien array. spacing them out by 40
      for (var i = 0; i < alienMax; i++) {
@@ -96,6 +97,8 @@
         ctx.fillText(killCount, 550, 20);
         
         if(!alive){
+            track.pause();
+            womp.play();
             ctx.fillText("You were vanquished. You slew " + killCount + " Alien Ships!", 20,300);
             ctx.fillText("Click to continue :)", 200, 350);
     }
@@ -220,6 +223,7 @@
         clearCanvas();
           
         if(alive){
+        track.play();
         BeamHit();
         moveBeam();
         moveAliens();
@@ -250,6 +254,8 @@
         alien.src = 'images/alien.png';
         beam = new Image();
         beam.src = 'images/beam.png';
+        track = new Audio('Audio/bgMusic.mp3');
+        womp = new Audio('Audio/womp.mp3');
         document.addEventListener("keydown", keyPress, false);
         document.addEventListener("keyup", keyLift, false);
         document.addEventListener("click", restart, false);
