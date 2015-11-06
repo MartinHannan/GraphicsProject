@@ -86,7 +86,9 @@
         }
             
     }
-        
+    /*
+    Draws the beam along the screen. 
+    */    
     function drawBeam(){
         if(beams.length){
             for(var i = 0; i < beams.length; i++){
@@ -97,6 +99,9 @@
         }
     }
         
+    /*
+    Moves the beam along the screen. 
+    */
     function moveBeam(){
         for(var i = 0; i < beams.length; i++){
             //if this array items y is less than height add -10
@@ -109,6 +114,9 @@
         }
     }
         
+    /*
+    Displays the relevant info to the screen
+    */
     function displayKills(){
         
         ctx.font = "bold 24px Helvetica";
@@ -116,10 +124,10 @@
         ctx.fillText("Enemies Cleansed:", 300, 20);
         ctx.fillText(killCount, 550, 20);
         
-        if(!playGame){
+        if(!playGame){//if you haven't reached the title screen this will execute
             titleScreen();
         }
-        if(!alive){
+        if(!alive){//if you're dead this will execute
             track.pause();
             ctx.fillText("You were vanquished. You slew " + killCount2 + " Alien Ships!", 20,300);
             ctx.fillText("Click to continue :)", 200, 350);
@@ -127,60 +135,80 @@
     }
         
 }
+    /*
+    Basically just calls restart and sets you to alive
+    */
     function clickCont(){
-        alive = true;
-        restart();
-        canvas.removeEventListener("click", clickCont, false);
+        alive = true;//set the alive to true
+        restart();//call the restart function
+        canvas.removeEventListener("click", clickCont, false);//this event listener listens for a click and calls the clickCont function.
     }
-     
-    function titleScreen(){
-        clearCanvas();
-        ctx.drawImage(title, 0,0)
-        canvas.addEventListener("click", truth, false);
-    }
-        function truth(){
         
-            playGame = true;
-            canvas.removeEventListener("click", truth, false);
+     /*
+        This function prints out my Title Screen Image to the Canvas
+     */
+    function titleScreen(){
+        clearCanvas();//clear the canvas
+        ctx.drawImage(title, 0,0);//the drawImage for the Title screen
+        canvas.addEventListener("click", truth, false);//this event listener listens for a click and calls the truth function.
+    }
+        
+        
+    /*
+        I needed this truth function to set the boolean to true.
+        I tried button clicks but nothing would work for me
+        */   
+    function truth(){
+        
+            playGame = true;//set playGame to true
+            canvas.removeEventListener("click", truth, false);//This removes the eventListener listening for a click.
             
         }
         
+     /*
+        This function resets the X and Y coordinates for the Aliens and spaces them out
+     */   
     function restart(){
         
-        var space = 50
-        for(var i = 0; i < aliens.length; i++){
-            aliens[i][0] = space;
-            aliens[i][1] = -50;
+        var space = 50;//the space between
+        for(var i = 0; i < aliens.length; i++){//loops over aliens
+            aliens[i][0] = space;//sets alien x to 50
+            aliens[i][1] = -50;//sets alien y to -50 which is above the canvas
             space = space + alienW + 60;//this part spaces the aliens out on the x axis.
         }
     
     }
         
     /*
-    Here are 2 functions that monitor when a key
-    is pressed and release. They switch the values
+    Here are is a function that monitor when a key
+    is pressed. It switch the values
     of the corresponding booleans accoringly
     */
       function keyPress(e){
           
-        if(e.keyCode == 39) right = true;
-        else if(e.keyCode == 37) left = true;
-        if(e.keyCode == 38) up = true;
-        else if(e.keyCode == 40) down = true;
+        if(e.keyCode == 39) right = true;//if right is pressed, right boolean is true
+        else if(e.keyCode == 37) left = true;//if left is pressed, left boolean is true
+        if(e.keyCode == 38) up = true;//if up is pressed, up boolean is true
+        else if(e.keyCode == 40) down = true;//if down is pressed, down boolean is true
         
-        if(e.keyCode == 88 && beams.length<=beamMax) 
+        if(e.keyCode == 88 && beams.length<=beamMax)//if x is pressed and number of beams is less than the max
         {
-            playGame = true;
-            beams.push([player_x + 42, player_y - 20]);
+            playGame = true;//playGame = true
+            beams.push([player_x + 42, player_y - 20]);//push this x and y onto the array of beams
          
       }
       }
         
+    /*
+    Here are is a function that monitor when a key
+    is released. It switch the values
+    of the corresponding booleans accoringly
+    */
       function keyLift(e){
-        if(e.keyCode == 39) right = false;
-        else if(e.keyCode == 37) left = false;
-        if(e.keyCode == 38) up = false;
-        else if(e.keyCode == 40) down = false;
+        if(e.keyCode == 39) right = false;//if right is released, right boolean is true
+        else if(e.keyCode == 37) left = false;//if left is released, left boolean is true
+        if(e.keyCode == 38) up = false;//if up is released, up boolean is true
+        else if(e.keyCode == 40) down = false;//if down is released, down boolean is true
       }
     
         //this function is responsible for drawing the player ship and the correct state from the sprite sheet
@@ -228,36 +256,36 @@
         var playerYH = player_h + player_y;
         
         for(var i = 0; i< aliens.length; i++){
+            
             /*
             If the players x is greater than alien x 
             AND is less than alien x + its w
             AND the players y is greater than alien y 
             AND is less than alien y + its h
-            */
-            
+            */  
             if(player_x > aliens[i][0] && player_x< aliens[i][0] + alienW && player_y > aliens[i][1] && player_y < aliens[i][1] + alienH){
                 alive = false;
-                womp.play();
-                killCount2 = killCount;
-                killCount = 0;
+                womp.play();//play death sound
+                killCount2 = killCount;//switch values so i can safely set killcount to zero
+                killCount = 0;//set killcount = 0
             }
             if(playerXW < aliens[i][0] + alienW && playerXW > aliens[i][0] && player_y > aliens[i][1] && player_y < aliens[i][1] + alienH){
                 alive = false;
-                womp.play();
-                killCount2 = killCount;
-                killCount = 0;
+                womp.play();//play death sound
+                killCount2 = killCount;//switch values so i can safely set killcount to zero
+                killCount = 0;//set killcount = 0
             }
             if(playerYH > aliens[i][1] && playerYH < aliens[i][1] + alienH && player_x > aliens[i][0] && player_x < aliens[i][0] + alienW){
                 alive = false;
-                womp.play();
-                killCount2 = killCount;
-                killCount = 0;
+                womp.play();//play death sound
+                killCount2 = killCount;//switch values so i can safely set killcount to zero
+                killCount = 0;//set killcount = 0
             }
             if(playerYH > aliens[i][1] && playerYH < aliens[i][1] + alienH && playerXW < aliens[i][0] + alienW && playerXW > aliens[i][0]){
                 alive = false;
-                womp.play();
-                killCount2 = killCount;
-                killCount = 0;
+                womp.play();//play death sound
+                killCount2 = killCount;//switch values so i can safely set killcount to zero
+                killCount = 0;//set killcount = 0
             }
         }
                    
@@ -286,11 +314,16 @@
           }
       }
         
-    //this is the gameLoop function. This is the function we will be repeating over and over using requestAnimationFrame
+      /*
+      This is the gameLoop function. 
+      This is the function
+      we will be repeating over and 
+      over using requestAnimationFrame
+      */
       function gameLoop(){
-        clearCanvas();
+        clearCanvas();//clear the canvas
           
-        if(alive && playGame){
+        if(alive && playGame){//if you are alive and you have passed the Start Screen then this will execute
         track.play();
         BeamHit();
         moveBeam();
@@ -301,31 +334,38 @@
         playerCollision();
         }
           
-        displayKills();
+        displayKills();//display score, end screen and all that jazz
         requestAnimationFrame(gameLoop);
       }
         
-    //the clear canvas method
+        /*
+        the clear canvas method
+        */
       function clearCanvas(){
-        ctx.clearRect(0,0,600,600);
+        ctx.clearRect(0,0,600,600);//clear canvas starting at 0,0 going to 600,600
       }
         
          
         
-    //the initialisation function. It basically initialises all the variables and then calls itself. I could have just done it manually but I read in a few books that this is a preferred method so I stuck with it.
+    /*
+    The initialisation function. It basically initialises
+    all the variables and then calls itself. I could have
+    just done it manually but I read in a few books that 
+    this is a preferred method so I stuck with it.
+    */
       (function init(){
         canvas = document.getElementById('canvas');
         ctx = canvas.getContext('2d');
-        player = new Image();
-        player.src = 'images/players.png';
-        alien = new Image();
-        alien.src = 'images/alien.png';
-        beam = new Image();
-        beam.src = 'images/beam.png';
-        title = new Image();
-        title.src = 'images/title.png';
-        track = new Audio('Audio/bgMusic.mp3');
-        womp = new Audio('Audio/womp.mp3');
+        player = new Image();//initialse player as an Image
+        player.src = 'images/players.png';//set player source
+        alien = new Image();//initialse alien as an Image
+        alien.src = 'images/alien.png';//set alien source
+        beam = new Image();//initialse beam as an Image
+        beam.src = 'images/beam.png';//set beam source
+        title = new Image();//set title as an Image
+        title.src = 'images/title.png';//set titles source
+        track = new Audio('Audio/bgMusic.mp3');//set track as audio and designate the file
+        womp = new Audio('Audio/womp.mp3');//set womp as audio and designate the file
         document.addEventListener("keydown", keyPress, false);
         document.addEventListener("keyup", keyLift, false);
         
