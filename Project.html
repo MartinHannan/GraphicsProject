@@ -3,24 +3,34 @@
   <head>
     <title>Game Project</title>
     <style type="text/css">
+         /*
+        Some very basic CSS styling for the body
+        */
     body {
         margin:0;
         padding:0;
     }
+         /*
+        Some very basic CSS styling for the canvas
+        */
     canvas {
+       
       display:block;
       margin:20px auto 0;
       background: #000000;
-      border:1px dashed #ccc;
-      background:#000;
     }
       </style>    
   </head>
   <body>
     <canvas id="canvas" width ="600" height ="600"></canvas>
     <script type="text/javascript">
-    //Declare Variables
-      var canvas, width = 600, height = 600, ctx;
+     /*
+        Here is the section I declare my Variables.
+        Relevant variables are initialise but others are only initialised
+        inside the init() function. I adopted this style as it is praised
+        as being easy to read in  the book HTML5 Canvas.
+        */
+      var canvas, width = 600, height = 600, ctx;//basic variables to do with the canvas.
         
       var player, alien, beam;//these are the variables for the sprites used in this game.
       
@@ -28,18 +38,27 @@
       
       player_x = (width / 2) - 30, player_y = height - 95, player_w = 105, player_h = 81;//variables for initially placing the player
     
-      var beamMax = 2; beams = [];
+      var beamMax = 2; beams = [];//variables for the beam projectile. e.g. max number and array to hold instances of them
         
-      var alienMax = 5, aliens =[], alienX= -10, alienY=-45, alienW=84, alienH= 92, speed = 3;
+      var alienMax = 5, aliens =[], alienX= -10, alienY=-45, alienW=84, alienH= 92, speed = 3;//variables to do with the aliens
         
       //boolean variables to track keys being pressed
       var right = false;
       var left = false;
       var up = false;
       var down = false;
-      var killCount = 0;
-      var alive = true;
-      var track, womp;
+      
+      /*
+      Variables for sound, killCount and Alive(i.e is the player alive)
+      */
+        
+      var killCount = 0, killCount2 =0;//killcount is 0 at the start of every game.
+        
+      var alive = true;//when you start the game the player is alive.
+            
+      var track, womp;//sound variables
+        
+      var counter =0;//this counter is important for the death sound. Because without it the sound will constantly loop.
       
         //Here i populate the alien array. spacing them out by 40
      for (var i = 0; i < alienMax; i++) {
@@ -98,36 +117,42 @@
         
         if(!alive){
             track.pause();
+            if(counter == 0){
             womp.play();
-            ctx.fillText("You were vanquished. You slew " + killCount + " Alien Ships!", 20,300);
+            counter++;
+            }
+            ctx.fillText("You were vanquished. You slew " + killCount2 + " Alien Ships!", 20,300);
             ctx.fillText("Click to continue :)", 200, 350);
+            canvas.addEventListener("click", clickCont, false);
     }
         
 }
-    function restart(){
+    function clickCont(){
         alive = true;
-        canvas.removeEventListener("click", restart, false);
+        restart();
+        canvas.removeEventListener("click", clickCont, false);
     }
         
         
+    function restart(){
+        for(var i = 0; i < aliens.length; i++){
+            aliens[i][0] = 50;
+            aliens[i][1] = -50;
+        }
     
-        /*
-        function moveBeam(){
-            for(var i =0; i<beams.length; i++){
-            if(beams[i][1] > -11){
-                beams[i][1] -=10;         
-            }else if(beams[i][1] < -10){
-                beams.splice(i,1);
-            } 
-        }    
-    }*/
-    //here are 2 functions that monitor when a key is pressed and release. They switch the values of the corresponding booleans accoringly
+    }
+        
+    /*
+    Here are 2 functions that monitor when a key
+    is pressed and release. They switch the values
+    of the corresponding booleans accoringly
+    */
       function keyPress(e){
         if(e.keyCode == 39) right = true;
         else if(e.keyCode == 37) left = true;
         if(e.keyCode == 38) up = true;
         else if(e.keyCode == 40) down = true;
-        if(e.keyCode == 88 && beams.length<=beamMax) beams.push([player_x + 42, player_y - 20, 4, 20]);
+        if(e.keyCode == 88 && beams.length<=beamMax) beams.push([player_x + 42, player_y - 20]);
       }
         
       function keyLift(e){
@@ -173,23 +198,41 @@
             }
       }
         
-        //this player collision function was not logically hard but it involve keeping track of 4 sides and in the end I found that the HTML5 Canvas had the best resources for teaching how to manage it. Pages 350 - 380 specifically.
+        /*This player collision function was not logically hard but it involve 
+        keeping track of 4 sides and in the end I found that the HTML5 Canvas 
+        had the best resources for teaching how to manage it. Pages 350 - 380 specifically.
+        */
       function playerCollision(){
         var playerXW = player_w + player_x;
         var playerYH = player_h + player_y;
         
         for(var i = 0; i< aliens.length; i++){
+            /*
+            If the players x is greater than alien x 
+            AND is less than alien x + its w
+            AND the players y is greater than alien y 
+            AND is less than alien y + its h
+            */
+            
             if(player_x > aliens[i][0] && player_x< aliens[i][0] + alienW && player_y > aliens[i][1] && player_y < aliens[i][1] + alienH){
                 alive = false;
+                killCount2 = killCount;
+                killCount = 0;
             }
             if(playerXW < aliens[i][0] + alienW && playerXW > aliens[i][0] && player_y > aliens[i][1] && player_y < aliens[i][1] + alienH){
                 alive = false;
+                killCount2 = killCount;
+                killCount = 0;
             }
             if(playerYH > aliens[i][1] && playerYH < aliens[i][1] + alienH && player_x > aliens[i][0] && player_x < aliens[i][0] + alienW){
                 alive = false;
+                killCount2 = killCount;
+                killCount = 0;
             }
             if(playerYH > aliens[i][1] && playerYH < aliens[i][1] + alienH && playerXW < aliens[i][0] + alienW && playerXW > aliens[i][0]){
                 alive = false;
+                killCount2 = killCount;
+                killCount = 0;
             }
         }
                    
@@ -258,7 +301,7 @@
         womp = new Audio('Audio/womp.mp3');
         document.addEventListener("keydown", keyPress, false);
         document.addEventListener("keyup", keyLift, false);
-        document.addEventListener("click", restart, false);
+        
 
       })();
     //calling the requestAnimationFrame for an indefinite amount of time  
