@@ -59,6 +59,8 @@
       var track, womp;//sound variables
         
       var counter =0;//this counter is important for the death sound. Because without it the sound will constantly loop.
+    
+      var playGame = false;     
       
         //Here i populate the alien array. spacing them out by 40
      for (var i = 0; i < alienMax; i++) {
@@ -103,24 +105,22 @@
                 //if it's higher than than the height(i.e not visible) 
                 //remove it from the array freeing up space for another shot.
             }else if(beams[i][1] < -10)
-                beams.splice(i,1);
-               
-                
+                beams.splice(i,1);           
         }
     }
         
     function displayKills(){
+        
         ctx.font = "bold 24px Helvetica";
         ctx.fillStyle = "#fff";
         ctx.fillText("Enemies Cleansed:", 300, 20);
         ctx.fillText(killCount, 550, 20);
         
+        if(!playGame){
+            titleScreen();
+        }
         if(!alive){
             track.pause();
-            if(counter == 0){
-            womp.play();
-            counter++;
-            }
             ctx.fillText("You were vanquished. You slew " + killCount2 + " Alien Ships!", 20,300);
             ctx.fillText("Click to continue :)", 200, 350);
             canvas.addEventListener("click", clickCont, false);
@@ -132,12 +132,26 @@
         restart();
         canvas.removeEventListener("click", clickCont, false);
     }
+     
+    function titleScreen(){
+        clearCanvas();
+        ctx.drawImage(title, 0,0)
+        canvas.addEventListener("click", truth, false);
+    }
+        function truth(){
         
+            playGame = true;
+            canvas.removeEventListener("click", truth, false);
+            
+        }
         
     function restart(){
+        
+        var space = 50
         for(var i = 0; i < aliens.length; i++){
-            aliens[i][0] = 50;
+            aliens[i][0] = space;
             aliens[i][1] = -50;
+            space = space + alienW + 60;//this part spaces the aliens out on the x axis.
         }
     
     }
@@ -148,11 +162,18 @@
     of the corresponding booleans accoringly
     */
       function keyPress(e){
+          
         if(e.keyCode == 39) right = true;
         else if(e.keyCode == 37) left = true;
         if(e.keyCode == 38) up = true;
         else if(e.keyCode == 40) down = true;
-        if(e.keyCode == 88 && beams.length<=beamMax) beams.push([player_x + 42, player_y - 20]);
+        
+        if(e.keyCode == 88 && beams.length<=beamMax) 
+        {
+            playGame = true;
+            beams.push([player_x + 42, player_y - 20]);
+         
+      }
       }
         
       function keyLift(e){
@@ -216,21 +237,25 @@
             
             if(player_x > aliens[i][0] && player_x< aliens[i][0] + alienW && player_y > aliens[i][1] && player_y < aliens[i][1] + alienH){
                 alive = false;
+                womp.play();
                 killCount2 = killCount;
                 killCount = 0;
             }
             if(playerXW < aliens[i][0] + alienW && playerXW > aliens[i][0] && player_y > aliens[i][1] && player_y < aliens[i][1] + alienH){
                 alive = false;
+                womp.play();
                 killCount2 = killCount;
                 killCount = 0;
             }
             if(playerYH > aliens[i][1] && playerYH < aliens[i][1] + alienH && player_x > aliens[i][0] && player_x < aliens[i][0] + alienW){
                 alive = false;
+                womp.play();
                 killCount2 = killCount;
                 killCount = 0;
             }
             if(playerYH > aliens[i][1] && playerYH < aliens[i][1] + alienH && playerXW < aliens[i][0] + alienW && playerXW > aliens[i][0]){
                 alive = false;
+                womp.play();
                 killCount2 = killCount;
                 killCount = 0;
             }
@@ -265,7 +290,7 @@
       function gameLoop(){
         clearCanvas();
           
-        if(alive){
+        if(alive && playGame){
         track.play();
         BeamHit();
         moveBeam();
@@ -297,6 +322,8 @@
         alien.src = 'images/alien.png';
         beam = new Image();
         beam.src = 'images/beam.png';
+        title = new Image();
+        title.src = 'images/title.png';
         track = new Audio('Audio/bgMusic.mp3');
         womp = new Audio('Audio/womp.mp3');
         document.addEventListener("keydown", keyPress, false);
