@@ -37,6 +37,8 @@
       var left = false;
       var up = false;
       var down = false;
+      var killCount = 0;
+      var alive = true;
       
         //Here i populate the alien array. spacing them out by 40
      for (var i = 0; i < alienMax; i++) {
@@ -86,6 +88,19 @@
                 
         }
     }
+        
+    function displayKills(){
+        ctx.font = "bold 24px Helvetica";
+        ctx.fillStyle = "#fff";
+        ctx.fillText("Enemies Cleansed:", 300, 20);
+        ctx.fillText(killCount, 550, 20);
+        
+        if(!alive){
+            ctx.fillText("You were vanquished. You slew " + killCount + " Alien Ships!", 20,300);
+    }
+}
+        
+        
     
         /*
         function moveBeam(){
@@ -105,6 +120,7 @@
         else if(e.keyCode == 40) down = true;
         if(e.keyCode == 88 && beams.length<=beamMax) beams.push([player_x + 42, player_y - 20, 4, 20]);
       }
+        
       function keyLift(e){
         if(e.keyCode == 39) right = false;
         else if(e.keyCode == 37) left = false;
@@ -147,6 +163,28 @@
                 scrX = 4;
             }
       }
+        
+        //this player collision function was not logically hard but it involve keeping track of 4 sides and in the end I found that the HTML5 Canvas had the best resources for teaching how to manage it. Pages 350 - 380 specifically.
+      function playerCollision(){
+        var playerXW = player_w + player_x;
+        var playerYH = player_h + player_y;
+        
+        for(var i = 0; i< aliens.length; i++){
+            if(player_x > aliens[i][0] && player_x< aliens[i][0] + alienW && player_y > aliens[i][1] && player_y < aliens[i][1] + alienH){
+                alive = false;
+            }
+            if(playerXW < aliens[i][0] + alienW && playerXW > aliens[i][0] && player_y > aliens[i][1] && player_y < aliens[i][1] + alienH){
+                alive = false;
+            }
+            if(playerYH > aliens[i][1] && playerYH < aliens[i][1] + alienH && player_x > aliens[i][0] && player_x < aliens[i][0] + alienW){
+                alive = false;
+            }
+            if(playerYH > aliens[i][1] && playerYH < aliens[i][1] + alienH && playerXW < aliens[i][0] + alienW && playerXW > aliens[i][0]){
+                alive = false;
+            }
+        }
+                   
+      }
       
       function BeamHit(){
           var beamGone = false;
@@ -158,8 +196,9 @@
                   if(beams[i][1] <= (aliens[k][1] + aliens[k][3]) && beams[i][0] >= aliens[k][0] && beams[i][0]<= (aliens[k][0] + aliens[k][2])){
                       beamGone = true;
                       aliens.splice(k,1);
+                      killCount += 1;//when an Alien is killed increment the kill count.
                       //randomly push a new Alien onto the screen to replace the old one
-                      aliens.push([(Math.random() * 325) + 20, -45, alienW, alienH, speed]);
+                      aliens.push([(Math.random() * 325) + 40, -45, alienW, alienH, speed]);
                   }
               }
               //if the beam hit remove it from the array.
@@ -169,15 +208,22 @@
               }
           }
       }
+        
     //this is the gameLoop function. This is the function we will be repeating over and over using requestAnimationFrame
       function gameLoop(){
         clearCanvas();
+          
+        if(alive){
         BeamHit();
         moveBeam();
         moveAliens();
         drawAliens();
         drawBeam();
         drawPlayer();
+        playerCollision();
+        }
+          
+        displayKills();
         requestAnimationFrame(gameLoop);
       }
         
@@ -186,7 +232,7 @@
         ctx.clearRect(0,0,600,600);
       }
         
-    
+         
         
     //the initialisation function. It basically initialises all the variables and then calls itself. I could have just done it manually but I read in a few books that this is a preferred method so I stuck with it.
       (function init(){
