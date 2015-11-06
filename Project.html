@@ -97,8 +97,14 @@
         
         if(!alive){
             ctx.fillText("You were vanquished. You slew " + killCount + " Alien Ships!", 20,300);
+            ctx.fillText("Click to continue :)", 200, 350);
     }
+        
 }
+    function restart(){
+        alive = true;
+        canvas.removeEventListener("click", restart, false);
+    }
         
         
     
@@ -246,6 +252,8 @@
         beam.src = 'images/beam.png';
         document.addEventListener("keydown", keyPress, false);
         document.addEventListener("keyup", keyLift, false);
+        document.addEventListener("click", restart, false);
+
       })();
     //calling the requestAnimationFrame for an indefinite amount of time  
     requestAnimationFrame(gameLoop);
